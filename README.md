@@ -18,8 +18,8 @@ All images and background design was created using Gimp 2.8
   4. Player powerups and discrete levels
   
 ## Screenshots
-![alt text](images/IntroScreen.png "Intro Screen Screen")
+![alt text](IntroScreen.png "Intro Screen Screen")
 
-![alt text](images/Gameplay.png "Typical game display")
+![alt text](Gameplay.png "Typical game display")
 
 
