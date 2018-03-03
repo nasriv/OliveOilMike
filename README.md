@@ -1,5 +1,5 @@
 # Olive Oil Mike
-2D Python game developed using PyGame 1.8 package and Python 3.6. All images and background design were created using Gimp 2.8
+2D Python game developed using PyGame package and Python 3.6. All images and background design were created using Gimp 2.8
 
 ## How to Play/Controls
   - Download OO_MikeMain.py and images folder to python working directory
@@ -21,5 +21,8 @@
 ![alt text](IntroScreen.png "Intro Screen Screen")
 
 ![alt text](Gameplay.png "Typical game display")
+
+## Link to PyGame Site
+https://www.pygame.org/wiki/GettingStarted
 
 
