@@ -1,8 +1,5 @@
 # Olive Oil Mike
-2D Python game developed using PyGame 1.8 package
-
-Developed using Python 3.6 and PyGame v1.8 package
-All images and background design was created using Gimp 2.8
+2D Python game developed using PyGame 1.8 package and Python 3.6. All images and background design were created using Gimp 2.8
 
 ## Controls
   - Arrow Keys to control the player [up/down/left/right]
@@ -16,6 +13,7 @@ All images and background design was created using Gimp 2.8
   2. High Score module for keeping track of past achievements
   3. Player health bar/multiple lives for continued gameplay
   4. Player powerups and discrete levels
+  5. Standalone Windows .exe file
   
 ## Screenshots
 ![alt text](IntroScreen.png "Intro Screen Screen")
