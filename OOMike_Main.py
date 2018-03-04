@@ -246,8 +246,8 @@ def gameLoop():
                         muPos += 1
                     else:
                         muPos = 0
-                elif muPos != muPosPrev:
-                    muPosPrev = muPos
+            elif muPos != muPosPrev:
+                muPosPrev = muPos
 
         # Backgound blit
         gameDisplay.blit(bkIMG,(0,0))
