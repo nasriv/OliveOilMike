@@ -42,13 +42,18 @@ hw_logo = int(Logorect.width/2)
 plW = 390
 plH = 490
 scale = 7
-PlayerSpriteRight = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRight.png"))
-PlayerSpriteRight = pygame.transform.scale(PlayerSpriteRight,(int(plW/scale),int(plH/scale)))
-PlayerSpriteLeft = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeft.png"))
-PlayerSpriteLeft = pygame.transform.scale(PlayerSpriteLeft,(int(plW/scale),int(plH/scale)))
+PlayerSpriteRightMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightMike.png"))
+PlayerSpriteRightMike = pygame.transform.scale(PlayerSpriteRightMike,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftMike.png"))
+PlayerSpriteLeftMike = pygame.transform.scale(PlayerSpriteLeftMike,(int(plW/scale),int(plH/scale)))
 
-PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRight)
-PLayerL_mask = pygame.mask.from_surface(PlayerSpriteLeft)
+PlayerSpriteRightGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightGrant.png"))
+PlayerSpriteRightGrant = pygame.transform.scale(PlayerSpriteRightGrant,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftGrant.png"))
+PlayerSpriteLeftGrant = pygame.transform.scale(PlayerSpriteLeftGrant,(int(plW/scale),int(plH/scale)))
+
+PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRightMike)
+PLayerL_mask = pygame.mask.from_surface(PlayerSpriteLeftMike)
 
 # import olive oil collectible
 OilW = 548
@@ -90,9 +95,12 @@ class item(pygame.sprite.Sprite):
 class player(pygame.sprite.Sprite):
     # sprite for the player
 
+    PlayerSpriteLeft = PlayerSpriteLeftMike
+    PlayerSpriteRight = PlayerSpriteRightMike    
+
     def __init__(self, velocity):
         pygame.sprite.Sprite.__init__(self)
-        self.image = PlayerSpriteLeft.convert_alpha()
+        self.image = self.PlayerSpriteLeft.convert_alpha()
         self.rect = self.image.get_rect()
         self.velocity = velocity
         self.rect.centerx = HW
@@ -103,10 +111,10 @@ class player(pygame.sprite.Sprite):
 
         if k[K_LEFT]:
             self.rect.x -= self.velocity
-            self.image = PlayerSpriteLeft.convert_alpha()
+            self.image = self.PlayerSpriteLeft.convert_alpha()
         elif k[K_RIGHT]:
             self.rect.x += self.velocity
-            self.image = PlayerSpriteRight.convert_alpha()
+            self.image = self.PlayerSpriteRight.convert_alpha()
 
         if k[K_UP]:
             self.rect.y -= self.velocity
@@ -121,6 +129,16 @@ class player(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom >= display_height:
             self.rect.bottom = display_height
+
+    def setMike(self):
+        self.PlayerSpriteLeft = PlayerSpriteLeftMike
+        self.PlayerSpriteRight = PlayerSpriteRightMike
+        self.image = self.PlayerSpriteLeft.convert_alpha()
+
+    def setGrant(self):
+        self.PlayerSpriteLeft = PlayerSpriteLeftGrant
+        self.PlayerSpriteRight = PlayerSpriteRightGrant
+        self.image = self.PlayerSpriteLeft.convert_alpha()
 
        # self.mask = pygame.mask.from_surface(self.image)
 
@@ -186,13 +204,16 @@ def game_intro():
         gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
 
 
-        button("PLAY", HW-100, HH+20, 200, 50, white, ltGreen, gameLoop)
-        button("QUIT", HW-100, HH+100, 200, 50, white, ltRed , gameQuit)
+        button("PLAY", HW-200, HH+20, 400, 50, white, ltGreen, gameLoop)
+        button("CHOOSE CHARACTER", HW-200, HH+100, 400, 50, white, ltGreen, gameChar)
+        button("QUIT", HW-200, HH+180, 400, 50, white, ltRed , gameQuit)
 
 
 
         pygame.display.update()
+'''
         clock.tick(FPS)
+'''
 
 def gameLoop():
 
@@ -233,6 +254,33 @@ def gameLoop():
         clock.tick(FPS)
 
 
+def gameChar():
+    time.sleep(.1)
+    char = True
+
+    while char:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                gameQuit()
+
+        gameDisplay.blit(bkIMG, (0, 0))
+        gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
+
+        button("MIKE (THE GOOD BOY)", HW-200, HH+20, 400, 50, white, ltGreen, setMike)
+        button("GRANT (NOT THIS ONE)", HW-200, HH+100, 400, 50, white, ltRed , setGrant)
+
+        pygame.display.update()
+
+def setGrant():
+    player.setGrant();
+    time.sleep(.1)
+    game_intro()
+
+def setMike():
+    player.setMike()
+    time.sleep(.1)
+    game_intro()
+
 ''' EXECUTE CODE'''
 
 # ---- Initialize player and items ---- #
@@ -255,7 +303,3 @@ for j in range(6):
     rock_sprites.add(r)
 
 game_intro()
-
-gameLoop()
-
-gameQuit()
