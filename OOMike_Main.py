@@ -255,7 +255,7 @@ def gameLoop():
 
 
 def gameChar():
-    time.sleep(.1)
+    time.sleep(.5)
     char = True
 
     while char:
@@ -273,12 +273,12 @@ def gameChar():
 
 def setGrant():
     player.setGrant();
-    time.sleep(.1)
+    time.sleep(.5)
     game_intro()
 
 def setMike():
     player.setMike()
-    time.sleep(.1)
+    time.sleep(.5)
     game_intro()
 
 ''' EXECUTE CODE'''
