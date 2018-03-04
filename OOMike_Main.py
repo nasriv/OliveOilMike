@@ -50,6 +50,7 @@ hw_logo = int(Logorect.width/2)
 plW = 390
 plH = 490
 scale = 7
+
 PlayerSpriteRightMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightMike.png"))
 PlayerSpriteRightMike = pygame.transform.scale(PlayerSpriteRightMike,(int(plW/scale),int(plH/scale)))
 PlayerSpriteLeftMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftMike.png"))
@@ -59,6 +60,11 @@ PlayerSpriteRightGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRi
 PlayerSpriteRightGrant = pygame.transform.scale(PlayerSpriteRightGrant,(int(plW/scale),int(plH/scale)))
 PlayerSpriteLeftGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftGrant.png"))
 PlayerSpriteLeftGrant = pygame.transform.scale(PlayerSpriteLeftGrant,(int(plW/scale),int(plH/scale)))
+
+PlayerSpriteRightVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightVinny.png"))
+PlayerSpriteRightVinny = pygame.transform.scale(PlayerSpriteRightVinny,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftVinny.png"))
+PlayerSpriteLeftVinny = pygame.transform.scale(PlayerSpriteLeftVinny,(int(plW/scale),int(plH/scale)))
 
 PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRightMike)
 PLayerL_mask = pygame.mask.from_surface(PlayerSpriteLeftMike)
@@ -147,6 +153,11 @@ class player(pygame.sprite.Sprite):
     def setGrant(self):
         self.PlayerSpriteLeft = PlayerSpriteLeftGrant
         self.PlayerSpriteRight = PlayerSpriteRightGrant
+        self.image = self.PlayerSpriteLeft.convert_alpha()
+
+    def setVinny(self):
+        self.PlayerSpriteLeft = PlayerSpriteLeftVinny
+        self.PlayerSpriteRight = PlayerSpriteRightVinny
         self.image = self.PlayerSpriteLeft.convert_alpha()
 
        # self.mask = pygame.mask.from_surface(self.image)
@@ -297,7 +308,8 @@ def gameChar():
         gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
 
         button("MIKE (THE GOOD BOY)", HW-200, HH+20, 400, 50, white, ltGreen, setMike)
-        button("GRANT (NOT THIS ONE)", HW-200, HH+100, 400, 50, white, ltRed , setGrant)
+        button("VINNY (EYY, BROOKLYN)", HW-200, HH+90, 400, 50, white, ltRed , setVinny)
+        button("GRANT (NOT THIS ONE)", HW-200, HH+160, 400, 50, white, ltRed , setGrant)
 
         pygame.display.update()
 
@@ -322,6 +334,11 @@ def gameCredits():
 
 def setGrant():
     player.setGrant();
+    time.sleep(.5)
+    game_intro()
+
+def setVinny():
+    player.setVinny();
     time.sleep(.5)
     game_intro()
 
