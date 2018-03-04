@@ -325,7 +325,7 @@ def gameChar():
         button("MIKE (THE GOOD BOY)", HW-200, HH+20, 400, 50, white, ltGreen, setMike)
         button("VINNY (EYY, BROOKLYN)", HW-200, HH+90, 400, 50, white, ltRed , setVinny)
         button("GRANT (NOT THIS ONE)", HW-200, HH+160, 400, 50, white, ltRed , setGrant)
-        button("CHRIS (THE ONE WHO BEANS)", HW-200, HH+230, 400, 50, white, ltRed, setChris)
+        button("MCGINN (THE ONE WHO BEANS)", HW-200, HH+230, 400, 50, white, ltRed, setChris)
 
         pygame.display.update()
 
