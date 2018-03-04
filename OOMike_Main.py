@@ -29,9 +29,11 @@ clock = pygame.time.Clock()
 
 pygame.display.set_caption(gameTitle)
 
+persistentCount = 0
 muPos = 0
 muPosPrev = 0
 musicList=os.listdir("music")
+random.shuffle(musicList)
 
 
 # Import background
@@ -153,7 +155,7 @@ class player(pygame.sprite.Sprite):
 
 def oil_count(count_oil):
     font = pygame.font.Font('freesansbold.ttf', 25)
-    text = font.render("OliveOil: "+str(count_oil),True,white)
+    text = font.render("Olive Oil: "+str(count_oil),True,white)
     gameDisplay.blit(text,(0,0))
 
 def gameQuit():
@@ -181,19 +183,19 @@ def button(msg,x,y,w,h,ic,ac,action=None, size=20):
     textRect.center = ( (x+(w/2)), (y+(h/2)) )
     gameDisplay.blit(textSurf, textRect)
 
-def message_display(text):
+def message_display(text, pos):
     largeText = pygame.font.Font('freesansbold.ttf',25)
     TextSurf = largeText.render(text, True, white)
     TextRect = TextSurf.get_rect()
-    TextRect.center = ((display_width/2),(display_height/2))
+    TextRect.center = ((display_width/2),(display_height/2 + pos*50))
     gameDisplay.blit(TextSurf,TextRect)
 
     pygame.display.update()
 
 
-def crash():
-    message_display("You were hit by that kid throwing rocks...")
-
+def crash(count):
+    message_display("You were hit by that kid throwing rocks...", 0)
+    message_display("You collected " + str(count) + " bottles...", 1)
     clock.tick(10)
     gameLoop()
 
@@ -221,8 +223,8 @@ def game_intro():
 
 def gameLoop():
 
+    global persistentCount
     count = 0
-
     gameExit = False
 
 
@@ -258,7 +260,7 @@ def gameLoop():
         # check collision
         hits = pygame.sprite.spritecollide(player, rock_sprites, False, pygame.sprite.collide_mask)
         if hits:
-            crash()
+            crash(persistentCount)
 
         # check player collected oil
         collect = pygame.sprite.spritecollide(player, oil_sprites, True, pygame.sprite.collide_mask)
@@ -268,6 +270,7 @@ def gameLoop():
             oil_sprites.add(o)
             count += 1
 
+        persistentCount = count
         # Draw / Render
         all_sprites.draw(gameDisplay)
         oil_count(count)
