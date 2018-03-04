@@ -193,10 +193,14 @@ def message_display(text, pos):
     pygame.display.update()
 
 
-def crash(count):
+def crash(count, count2):
     message_display("You were hit by that kid throwing rocks...", 0)
     message_display("You collected " + str(count) + " bottles...", 1)
     clock.tick(10)
+
+    if count == count2 and count != 0:
+        time.sleep(1)
+
     gameLoop()
 
 
@@ -260,7 +264,7 @@ def gameLoop():
         # check collision
         hits = pygame.sprite.spritecollide(player, rock_sprites, False, pygame.sprite.collide_mask)
         if hits:
-            crash(persistentCount)
+            crash(persistentCount, count)
 
         # check player collected oil
         collect = pygame.sprite.spritecollide(player, oil_sprites, True, pygame.sprite.collide_mask)
