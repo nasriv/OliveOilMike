@@ -2,6 +2,7 @@ import pygame
 from pygame import *
 import random, os, time
 
+from types import *
 
 pygame.init()
 
@@ -27,6 +28,11 @@ gameDisplay = pygame.display.set_mode((display_width,display_height))
 clock = pygame.time.Clock()
 
 pygame.display.set_caption(gameTitle)
+
+muPos = 0
+muPosPrev = 0
+musicList=os.listdir("music")
+
 
 # Import background
 bkIMG = pygame.image.load(os.path.join(imagedir,"background.png"))
@@ -66,6 +72,7 @@ RockW = 640
 RockH = 480
 rockImg = pygame.image.load(os.path.join(imagedir,"Rock.png"))
 rockImg = pygame.transform.scale(rockImg,(150,150))
+
 
 # DEFINE CLASSES
 
@@ -157,7 +164,7 @@ def text_object(text, font):
     textSurface = font.render(text, True, black)
     return textSurface, textSurface.get_rect()
 
-def button(msg,x,y,w,h,ic,ac,action=None):
+def button(msg,x,y,w,h,ic,ac,action=None, size=20):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
@@ -169,7 +176,7 @@ def button(msg,x,y,w,h,ic,ac,action=None):
     else:
         pygame.draw.rect(gameDisplay, ic,(x,y,w,h))
 
-    smallText = pygame.font.Font("freesansbold.ttf",20)
+    smallText = pygame.font.Font("freesansbold.ttf",size)
     textSurf, textRect = text_object(msg, smallText)
     textRect.center = ( (x+(w/2)), (y+(h/2)) )
     gameDisplay.blit(textSurf, textRect)
@@ -188,13 +195,11 @@ def crash():
     message_display("You were hit by that kid throwing rocks...")
 
     clock.tick(10)
-
     gameLoop()
 
 
 def game_intro():
     intro = True
-
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -205,10 +210,9 @@ def game_intro():
 
 
         button("PLAY", HW-200, HH+20, 400, 50, white, ltGreen, gameLoop)
-        button("CHOOSE CHARACTER", HW-200, HH+100, 400, 50, white, ltGreen, gameChar)
-        button("QUIT", HW-200, HH+180, 400, 50, white, ltRed , gameQuit)
-
-
+        button("CHOOSE CHARACTER", HW-200, HH+90, 400, 50, white, ltGreen, gameChar)
+        button("CREDITS", HW-200, HH+160, 400, 50, white, ltGreen, gameCredits)
+        button("QUIT", HW-200, HH+230, 400, 50, white, ltRed , gameQuit)
 
         pygame.display.update()
 '''
@@ -221,10 +225,29 @@ def gameLoop():
 
     gameExit = False
 
+
     while not gameExit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameQuit()
+
+#MUSIC HANDLING
+        global muPos
+        global muPosPrev
+
+        if len(musicList) > 0:
+            if not pygame.mixer.music.get_busy():
+                if muPos != muPosPrev:
+                    pygame.mixer.music.play(1)
+                elif muPos == muPosPrev:
+                    pygame.mixer.music.load("music/" + musicList[muPos])
+                    pygame.mixer.music.play(1)
+                    if muPos < len(musicList) - 1:
+                        muPos += 1
+                    else:
+                        muPos = 0
+                elif muPos != muPosPrev:
+                    muPosPrev = muPos
 
         # Backgound blit
         gameDisplay.blit(bkIMG,(0,0))
@@ -271,6 +294,25 @@ def gameChar():
 
         pygame.display.update()
 
+def gameCredits():
+    time.sleep(.5)
+    char = True
+
+    while char:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                gameQuit()
+
+        gameDisplay.blit(bkIMG, (0, 0))
+        gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
+
+        button("Candy-Colored Sky by  Catmosphere (Creative Commons)", HW-250, HH+20, 500, 50, white, ltGreen, None, 14)
+#        button("Steamshovel Harry by Brad Sucks and Allen (Creative Commons)", HW-250, HH+90, 500, 50, white, ltGreen, None, 14)
+        button("BACK", HW-250, HH+170, 500, 50, white, ltRed, backToIntro)
+
+        pygame.display.update()
+
+
 def setGrant():
     player.setGrant();
     time.sleep(.5)
@@ -280,6 +322,12 @@ def setMike():
     player.setMike()
     time.sleep(.5)
     game_intro()
+
+def backToIntro():
+    time.sleep(.5)
+    game_intro()
+
+
 
 ''' EXECUTE CODE'''
 
