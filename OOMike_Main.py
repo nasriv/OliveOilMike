@@ -2,6 +2,7 @@ import pygame
 from pygame import *
 import random, os, time
 
+from types import *
 
 pygame.init()
 
@@ -28,6 +29,13 @@ clock = pygame.time.Clock()
 
 pygame.display.set_caption(gameTitle)
 
+persistentCount = 0
+muPos = 0
+muPosPrev = 0
+musicList=os.listdir("music")
+random.shuffle(musicList)
+
+
 # Import background
 bkIMG = pygame.image.load(os.path.join(imagedir,"background.png"))
 bkIMG = bkIMG.convert()
@@ -42,13 +50,24 @@ hw_logo = int(Logorect.width/2)
 plW = 390
 plH = 490
 scale = 7
-PlayerSpriteRight = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRight.png"))
-PlayerSpriteRight = pygame.transform.scale(PlayerSpriteRight,(int(plW/scale),int(plH/scale)))
-PlayerSpriteLeft = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeft.png"))
-PlayerSpriteLeft = pygame.transform.scale(PlayerSpriteLeft,(int(plW/scale),int(plH/scale)))
 
-PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRight)
-PLayerL_mask = pygame.mask.from_surface(PlayerSpriteLeft)
+PlayerSpriteRightMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightMike.png"))
+PlayerSpriteRightMike = pygame.transform.scale(PlayerSpriteRightMike,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftMike.png"))
+PlayerSpriteLeftMike = pygame.transform.scale(PlayerSpriteLeftMike,(int(plW/scale),int(plH/scale)))
+
+PlayerSpriteRightGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightGrant.png"))
+PlayerSpriteRightGrant = pygame.transform.scale(PlayerSpriteRightGrant,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftGrant.png"))
+PlayerSpriteLeftGrant = pygame.transform.scale(PlayerSpriteLeftGrant,(int(plW/scale),int(plH/scale)))
+
+PlayerSpriteRightVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightVinny.png"))
+PlayerSpriteRightVinny = pygame.transform.scale(PlayerSpriteRightVinny,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftVinny.png"))
+PlayerSpriteLeftVinny = pygame.transform.scale(PlayerSpriteLeftVinny,(int(plW/scale),int(plH/scale)))
+
+PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRightMike)
+PLayerL_mask = pygame.mask.from_surface(PlayerSpriteLeftMike)
 
 # import olive oil collectible
 OilW = 548
@@ -61,6 +80,7 @@ RockW = 640
 RockH = 480
 rockImg = pygame.image.load(os.path.join(imagedir,"Rock.png"))
 rockImg = pygame.transform.scale(rockImg,(150,150))
+
 
 # DEFINE CLASSES
 
@@ -90,9 +110,12 @@ class item(pygame.sprite.Sprite):
 class player(pygame.sprite.Sprite):
     # sprite for the player
 
+    PlayerSpriteLeft = PlayerSpriteLeftMike
+    PlayerSpriteRight = PlayerSpriteRightMike    
+
     def __init__(self, velocity):
         pygame.sprite.Sprite.__init__(self)
-        self.image = PlayerSpriteLeft.convert_alpha()
+        self.image = self.PlayerSpriteLeft.convert_alpha()
         self.rect = self.image.get_rect()
         self.velocity = velocity
         self.rect.centerx = HW
@@ -103,10 +126,10 @@ class player(pygame.sprite.Sprite):
 
         if k[K_LEFT]:
             self.rect.x -= self.velocity
-            self.image = PlayerSpriteLeft.convert_alpha()
+            self.image = self.PlayerSpriteLeft.convert_alpha()
         elif k[K_RIGHT]:
             self.rect.x += self.velocity
-            self.image = PlayerSpriteRight.convert_alpha()
+            self.image = self.PlayerSpriteRight.convert_alpha()
 
         if k[K_UP]:
             self.rect.y -= self.velocity
@@ -122,13 +145,28 @@ class player(pygame.sprite.Sprite):
         if self.rect.bottom >= display_height:
             self.rect.bottom = display_height
 
+    def setMike(self):
+        self.PlayerSpriteLeft = PlayerSpriteLeftMike
+        self.PlayerSpriteRight = PlayerSpriteRightMike
+        self.image = self.PlayerSpriteLeft.convert_alpha()
+
+    def setGrant(self):
+        self.PlayerSpriteLeft = PlayerSpriteLeftGrant
+        self.PlayerSpriteRight = PlayerSpriteRightGrant
+        self.image = self.PlayerSpriteLeft.convert_alpha()
+
+    def setVinny(self):
+        self.PlayerSpriteLeft = PlayerSpriteLeftVinny
+        self.PlayerSpriteRight = PlayerSpriteRightVinny
+        self.image = self.PlayerSpriteLeft.convert_alpha()
+
        # self.mask = pygame.mask.from_surface(self.image)
 
 # ------------------------ #
 
 def oil_count(count_oil):
     font = pygame.font.Font('freesansbold.ttf', 25)
-    text = font.render("OliveOil: "+str(count_oil),True,white)
+    text = font.render("Olive Oil: "+str(count_oil),True,white)
     gameDisplay.blit(text,(0,0))
 
 def gameQuit():
@@ -139,7 +177,7 @@ def text_object(text, font):
     textSurface = font.render(text, True, black)
     return textSurface, textSurface.get_rect()
 
-def button(msg,x,y,w,h,ic,ac,action=None):
+def button(msg,x,y,w,h,ic,ac,action=None, size=20):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
@@ -151,32 +189,34 @@ def button(msg,x,y,w,h,ic,ac,action=None):
     else:
         pygame.draw.rect(gameDisplay, ic,(x,y,w,h))
 
-    smallText = pygame.font.Font("freesansbold.ttf",20)
+    smallText = pygame.font.Font("freesansbold.ttf",size)
     textSurf, textRect = text_object(msg, smallText)
     textRect.center = ( (x+(w/2)), (y+(h/2)) )
     gameDisplay.blit(textSurf, textRect)
 
-def message_display(text):
+def message_display(text, pos):
     largeText = pygame.font.Font('freesansbold.ttf',25)
     TextSurf = largeText.render(text, True, white)
     TextRect = TextSurf.get_rect()
-    TextRect.center = ((display_width/2),(display_height/2))
+    TextRect.center = ((display_width/2),(display_height/2 + pos*50))
     gameDisplay.blit(TextSurf,TextRect)
 
     pygame.display.update()
 
 
-def crash():
-    message_display("You were hit by that kid throwing rocks...")
-
+def crash(count, count2):
+    message_display("You were hit by that kid throwing rocks...", 0)
+    message_display("You collected " + str(count) + " bottles...", 1)
     clock.tick(10)
+
+    if count == count2 and count != 0:
+        time.sleep(1)
 
     gameLoop()
 
 
 def game_intro():
     intro = True
-
     while intro:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -186,24 +226,45 @@ def game_intro():
         gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
 
 
-        button("PLAY", HW-100, HH+20, 200, 50, white, ltGreen, gameLoop)
-        button("QUIT", HW-100, HH+100, 200, 50, white, ltRed , gameQuit)
-
-
+        button("PLAY", HW-200, HH+20, 400, 50, white, ltGreen, gameLoop)
+        button("CHOOSE CHARACTER", HW-200, HH+90, 400, 50, white, ltGreen, gameChar)
+        button("CREDITS", HW-200, HH+160, 400, 50, white, ltGreen, gameCredits)
+        button("QUIT", HW-200, HH+230, 400, 50, white, ltRed , gameQuit)
 
         pygame.display.update()
+'''
         clock.tick(FPS)
+'''
 
 def gameLoop():
 
+    global persistentCount
     count = 0
-
     gameExit = False
+
 
     while not gameExit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameQuit()
+
+#MUSIC HANDLING
+        global muPos
+        global muPosPrev
+
+        if len(musicList) > 0:
+            if not pygame.mixer.music.get_busy():
+                if muPos != muPosPrev:
+                    pygame.mixer.music.play(1)
+                elif muPos == muPosPrev:
+                    pygame.mixer.music.load("music/" + musicList[muPos])
+                    pygame.mixer.music.play(1)
+                    if muPos < len(musicList) - 1:
+                        muPos += 1
+                    else:
+                        muPos = 0
+            elif muPos != muPosPrev:
+                muPosPrev = muPos
 
         # Backgound blit
         gameDisplay.blit(bkIMG,(0,0))
@@ -214,7 +275,7 @@ def gameLoop():
         # check collision
         hits = pygame.sprite.spritecollide(player, rock_sprites, False, pygame.sprite.collide_mask)
         if hits:
-            crash()
+            crash(persistentCount, count)
 
         # check player collected oil
         collect = pygame.sprite.spritecollide(player, oil_sprites, True, pygame.sprite.collide_mask)
@@ -224,6 +285,7 @@ def gameLoop():
             oil_sprites.add(o)
             count += 1
 
+        persistentCount = count
         # Draw / Render
         all_sprites.draw(gameDisplay)
         oil_count(count)
@@ -231,6 +293,64 @@ def gameLoop():
         pygame.display.update()
 
         clock.tick(FPS)
+
+
+def gameChar():
+    time.sleep(.5)
+    char = True
+
+    while char:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                gameQuit()
+
+        gameDisplay.blit(bkIMG, (0, 0))
+        gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
+
+        button("MIKE (THE GOOD BOY)", HW-200, HH+20, 400, 50, white, ltGreen, setMike)
+        button("VINNY (EYY, BROOKLYN)", HW-200, HH+90, 400, 50, white, ltRed , setVinny)
+        button("GRANT (NOT THIS ONE)", HW-200, HH+160, 400, 50, white, ltRed , setGrant)
+
+        pygame.display.update()
+
+def gameCredits():
+    time.sleep(.5)
+    char = True
+
+    while char:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                gameQuit()
+
+        gameDisplay.blit(bkIMG, (0, 0))
+        gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
+
+        button("Candy-Colored Sky by  Catmosphere (Creative Commons)", HW-250, HH+20, 500, 50, white, ltGreen, None, 14)
+#        button("Steamshovel Harry by Brad Sucks and Allen (Creative Commons)", HW-250, HH+90, 500, 50, white, ltGreen, None, 14)
+        button("BACK", HW-250, HH+170, 500, 50, white, ltRed, backToIntro)
+
+        pygame.display.update()
+
+
+def setGrant():
+    player.setGrant();
+    time.sleep(.5)
+    game_intro()
+
+def setVinny():
+    player.setVinny();
+    time.sleep(.5)
+    game_intro()
+
+def setMike():
+    player.setMike()
+    time.sleep(.5)
+    game_intro()
+
+def backToIntro():
+    time.sleep(.5)
+    game_intro()
+
 
 
 ''' EXECUTE CODE'''
@@ -255,7 +375,3 @@ for j in range(6):
     rock_sprites.add(r)
 
 game_intro()
-
-gameLoop()
-
-gameQuit()
