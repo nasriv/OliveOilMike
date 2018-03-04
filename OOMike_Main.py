@@ -51,20 +51,30 @@ plW = 390
 plH = 490
 scale = 7
 
-PlayerSpriteRightMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightMike.png"))
+# Player Mike Sprite
+PlayerSpriteRightMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRight.png"))
 PlayerSpriteRightMike = pygame.transform.scale(PlayerSpriteRightMike,(int(plW/scale),int(plH/scale)))
-PlayerSpriteLeftMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftMike.png"))
+PlayerSpriteLeftMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeft.png"))
 PlayerSpriteLeftMike = pygame.transform.scale(PlayerSpriteLeftMike,(int(plW/scale),int(plH/scale)))
 
+# Player Grant Sprite
 PlayerSpriteRightGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightGrant.png"))
 PlayerSpriteRightGrant = pygame.transform.scale(PlayerSpriteRightGrant,(int(plW/scale),int(plH/scale)))
 PlayerSpriteLeftGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftGrant.png"))
 PlayerSpriteLeftGrant = pygame.transform.scale(PlayerSpriteLeftGrant,(int(plW/scale),int(plH/scale)))
 
+# Player Vinny Sprite
 PlayerSpriteRightVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightVinny.png"))
 PlayerSpriteRightVinny = pygame.transform.scale(PlayerSpriteRightVinny,(int(plW/scale),int(plH/scale)))
 PlayerSpriteLeftVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftVinny.png"))
 PlayerSpriteLeftVinny = pygame.transform.scale(PlayerSpriteLeftVinny,(int(plW/scale),int(plH/scale)))
+
+# Player Chris Sprite
+scale = 4
+PlayerSpriteRightChris = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightChris.png"))
+PlayerSpriteRightChris = pygame.transform.scale(PlayerSpriteRightChris,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftChris = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftChris.png"))
+PlayerSpriteLeftChris = pygame.transform.scale(PlayerSpriteLeftChris,(int(plW/scale),int(plH/scale)))
 
 PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRightMike)
 PLayerL_mask = pygame.mask.from_surface(PlayerSpriteLeftMike)
@@ -158,6 +168,11 @@ class player(pygame.sprite.Sprite):
     def setVinny(self):
         self.PlayerSpriteLeft = PlayerSpriteLeftVinny
         self.PlayerSpriteRight = PlayerSpriteRightVinny
+        self.image = self.PlayerSpriteLeft.convert_alpha()
+
+    def setChris(self):
+        self.PlayerSpriteLeft = PlayerSpriteLeftChris
+        self.PlayerSpriteRight = PlayerSpriteRightChris
         self.image = self.PlayerSpriteLeft.convert_alpha()
 
        # self.mask = pygame.mask.from_surface(self.image)
@@ -310,6 +325,7 @@ def gameChar():
         button("MIKE (THE GOOD BOY)", HW-200, HH+20, 400, 50, white, ltGreen, setMike)
         button("VINNY (EYY, BROOKLYN)", HW-200, HH+90, 400, 50, white, ltRed , setVinny)
         button("GRANT (NOT THIS ONE)", HW-200, HH+160, 400, 50, white, ltRed , setGrant)
+        button("CHRIS (THE ONE WHO BEANS)", HW-200, HH+230, 400, 50, white, ltRed, setChris)
 
         pygame.display.update()
 
@@ -333,17 +349,22 @@ def gameCredits():
 
 
 def setGrant():
-    player.setGrant();
+    player.setGrant()
     time.sleep(.5)
     game_intro()
 
 def setVinny():
-    player.setVinny();
+    player.setVinny()
     time.sleep(.5)
     game_intro()
 
 def setMike():
     player.setMike()
+    time.sleep(.5)
+    game_intro()
+
+def setChris():
+    player.setChris()
     time.sleep(.5)
     game_intro()
 
