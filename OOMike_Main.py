@@ -76,6 +76,13 @@ PlayerSpriteRightChris = pygame.transform.scale(PlayerSpriteRightChris,(int(plW/
 PlayerSpriteLeftChris = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftChris.png"))
 PlayerSpriteLeftChris = pygame.transform.scale(PlayerSpriteLeftChris,(int(plW/scale),int(plH/scale)))
 
+# Player Jonny Sprite
+PlayerSpriteRightJonny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightJonny.png"))
+PlayerSpriteRightJonny = pygame.transform.scale(PlayerSpriteRightJonny,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftJonny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftJonny.png"))
+PlayerSpriteLeftJonny = pygame.transform.scale(PlayerSpriteLeftJonny,(int(plW/scale),int(plH/scale)))
+
+
 PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRightMike)
 PLayerL_mask = pygame.mask.from_surface(PlayerSpriteLeftMike)
 
@@ -141,6 +148,7 @@ class player(pygame.sprite.Sprite):
 
     PlayerSpriteLeft = PlayerSpriteLeftMike
     PlayerSpriteRight = PlayerSpriteRightMike    
+    playerName="Mike"
 
     def __init__(self, velocity):
         pygame.sprite.Sprite.__init__(self)
@@ -231,21 +239,34 @@ class player(pygame.sprite.Sprite):
         self.PlayerSpriteLeft = PlayerSpriteLeftMike
         self.PlayerSpriteRight = PlayerSpriteRightMike
         self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Mike"
 
     def setGrant(self):
         self.PlayerSpriteLeft = PlayerSpriteLeftGrant
         self.PlayerSpriteRight = PlayerSpriteRightGrant
         self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Grant"
 
     def setVinny(self):
         self.PlayerSpriteLeft = PlayerSpriteLeftVinny
         self.PlayerSpriteRight = PlayerSpriteRightVinny
         self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Vinny"
+
+    def setJonny(self):
+        self.PlayerSpriteLeft = PlayerSpriteLeftJonny
+        self.PlayerSpriteRight = PlayerSpriteRightJonny
+        self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Jonny"
 
     def setChris(self):
         self.PlayerSpriteLeft = PlayerSpriteLeftChris
         self.PlayerSpriteRight = PlayerSpriteRightChris
         self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Chris"
+
+    def getPlayerName(self):
+        return self.playerName
 
        # self.mask = pygame.mask.from_surface(self.image)
 
@@ -361,7 +382,7 @@ def gameLoop():
 
         # check collision
         hits = pygame.sprite.spritecollide(player, rock_sprites, False, pygame.sprite.collide_mask)
-        if hits:
+        if hits and (player.getPlayerName() != "Jonny" or musicList[muPos].find("Steamshovel") == -1):
             crash(persistentCount, count)
 
         for rock in rock_sprites:
@@ -410,10 +431,11 @@ def gameChar():
         gameDisplay.blit(bkIMG, (0, 0))
         gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
 
-        button("MIKE (THE GOOD BOY)", HW-200, HH+20, 400, 50, white, ltGreen, setMike)
-        button("VINNY (EYY, BROOKLYN)", HW-200, HH+90, 400, 50, white, ltRed , setVinny)
-        button("GRANT (NOT THIS ONE)", HW-200, HH+160, 400, 50, white, ltRed , setGrant)
-        button("MCGINN (THE ONE WHO BEANS)", HW-200, HH+230, 400, 50, white, ltRed, setChris)
+        button("MIKE (THE GOOD BOY)", HW-200, HH+0, 400, 50, white, ltGreen, setMike)
+        button("VINNY (EYY, BROOKLYN)", HW-200, HH+60, 400, 50, white, ltRed , setVinny)
+        button("GRANT (NOT THIS ONE)", HW-200, HH+120, 400, 50, white, ltRed , setGrant)
+        button("MCGINN (THE ONE WHO BEANS)", HW-200, HH+180, 400, 50, white, ltRed, setChris)
+        button("STEAMSHOVEL JONNY", HW-200, HH+240, 400, 50, white, ltGreen, setJonny)
 
         pygame.display.update()
 
@@ -443,6 +465,11 @@ def setGrant():
 
 def setVinny():
     player.setVinny()
+    time.sleep(.5)
+    game_intro()
+
+def setJonny():
+    player.setJonny()
     time.sleep(.5)
     game_intro()
 
