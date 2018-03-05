@@ -91,6 +91,11 @@ RockH = 480
 rockImg = pygame.image.load(os.path.join(imagedir,"Rock.png"))
 rockImg = pygame.transform.scale(rockImg,(150,150))
 
+bulletW=100
+bulletH=150
+bulletImg = pygame.image.load(os.path.join(imagedir,"bullet.png"))
+bulletImg = pygame.transform.scale(bulletImg,(150,150))
+
 
 # DEFINE CLASSES
 
@@ -116,6 +121,20 @@ class item(pygame.sprite.Sprite):
 
         self.mask = pygame.mask.from_surface(self.image)
 
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("images/bullet.png")
+        self.image = pygame.transform.scale(self.image,(30,30))
+
+        self.rect = self.image.get_rect()
+    def update(self):
+        self.rect.y -= 20
+
+        global gameDisplay
+        if not gameDisplay.get_rect().contains(self.rect):
+            self.kill()
+
 
 class player(pygame.sprite.Sprite):
     # sprite for the player
@@ -130,6 +149,9 @@ class player(pygame.sprite.Sprite):
         self.velocity = velocity
         self.rect.centerx = HW
         self.rect.centery = display_height - self.rect.height/2
+        self.counter = 0
+        self.interval = 20
+        self.doubleBullet = False
 
     def update(self):
         k = pygame.key.get_pressed()
@@ -145,6 +167,56 @@ class player(pygame.sprite.Sprite):
             self.rect.y -= self.velocity
         elif k[K_DOWN]:
             self.rect.y += self.velocity
+
+
+        self.counter += 1
+        
+        if self.counter == self.interval:
+            global persistentCount
+            if persistentCount >= 40:
+                self.interval = 10
+            elif persistentCount >= 38:
+                self.interval = 11
+            elif persistentCount >= 36:
+                self.interval = 12
+            elif persistentCount >= 34:
+                self.interval = 13
+            elif persistentCount >= 32:
+                self.interval = 14
+            elif persistentCount >= 30:
+                self.doubleBullet = True
+            elif persistentCount >= 20:
+                self.interval = 15
+            elif persistentCount >= 18:
+                self.interval = 16
+            elif persistentCount >= 16:
+                self.interval = 17
+            elif persistentCount >= 14:
+                self.interval = 18
+            elif persistentCount >= 12:
+                self.interval = 19
+            self.counter = 0
+
+            if persistentCount >= 10:
+                if self.doubleBullet:
+                    bullet1 = Bullet()
+                    bullet2 = Bullet()
+                    bullet1.rect.x = self.rect.x - 10
+                    bullet1.rect.y = self.rect.y
+                    bullet2.rect.x = self.rect.x + 10
+                    bullet2.rect.y = self.rect.y
+                    all_sprites.add(bullet1)
+                    bullet_sprites.add(bullet1)
+                    all_sprites.add(bullet2)
+                    bullet_sprites.add(bullet2)
+                else:
+                    bullet = Bullet()
+                    bullet.rect.x = self.rect.x
+                    bullet.rect.y = self.rect.y
+                    all_sprites.add(bullet)
+                    bullet_sprites.add(bullet)
+
+
 
         if self.rect.right > display_width:
             self.rect.right = display_width
@@ -292,6 +364,22 @@ def gameLoop():
         if hits:
             crash(persistentCount, count)
 
+        for rock in rock_sprites:
+            for bullet in bullet_sprites:
+                tempBulletSprites = pygame.sprite.Group()
+                tempBulletSprites.add(bullet)
+                rock_hits = pygame.sprite.spritecollide(rock, tempBulletSprites, False, pygame.sprite.collide_mask)
+                if rock_hits:
+                    rock.kill()
+                    bullet.kill()
+                    break
+
+        if len(rock_sprites) < 6:
+            r = item(rockImg)
+            rock_sprites.add(r)
+            all_sprites.add(r)
+
+
         # check player collected oil
         collect = pygame.sprite.spritecollide(player, oil_sprites, True, pygame.sprite.collide_mask)
         for i in collect:
@@ -381,6 +469,7 @@ def backToIntro():
 all_sprites = pygame.sprite.Group()
 oil_sprites = pygame.sprite.Group()
 rock_sprites = pygame.sprite.Group()
+bullet_sprites = pygame.sprite.Group()
 
 player = player(10)
 all_sprites.add(player)
