@@ -1,6 +1,6 @@
 import pygame
 from pygame import *
-import random, os, time
+import random, os, time, math
 
 from types import *
 
@@ -129,14 +129,20 @@ class item(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, xDir = 0):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("images/bullet.png")
         self.image = pygame.transform.scale(self.image,(30,30))
+        self.xDir = xDir
 
         self.rect = self.image.get_rect()
     def update(self):
-        self.rect.y -= 20
+        yVal = math.sqrt(20*20 - 2.5*2.5*self.xDir*self.xDir)
+        self.rect.y -= yVal
+        if self.xDir < 0 :
+            self.rect.x -= math.sqrt(20*20 - yVal*yVal)
+        else:
+            self.rect.x += math.sqrt(20*20 - yVal*yVal)
 
         global gameDisplay
         if not gameDisplay.get_rect().contains(self.rect):
@@ -158,7 +164,9 @@ class player(pygame.sprite.Sprite):
         self.rect.centerx = HW
         self.rect.centery = display_height - self.rect.height/2
         self.counter = 0
+        self.boomCounter = 0
         self.interval = 20
+        self.boomInterval = -1
         self.doubleBullet = False
 
     def update(self):
@@ -179,9 +187,15 @@ class player(pygame.sprite.Sprite):
 
         self.counter += 1
         
+        if self.boomInterval > 0:
+            self.boomCounter += 1
+
         if self.counter == self.interval:
-            global persistentCount
-            if persistentCount >= 40:
+            global persistentCount        
+
+            if persistentCount >= 60:
+                self.boomInterval = 100
+            elif persistentCount >= 40:
                 self.interval = 10
             elif persistentCount >= 38:
                 self.interval = 11
@@ -223,7 +237,18 @@ class player(pygame.sprite.Sprite):
                     bullet.rect.y = self.rect.y
                     all_sprites.add(bullet)
                     bullet_sprites.add(bullet)
+                    
+        if self.boomCounter == self.boomInterval:
 
+            for i in range(0,11):
+                bullet = Bullet(-5 + i)
+                bullet.rect.x = self.rect.x
+                bullet.rect.y = self.rect.y
+                all_sprites.add(bullet)
+                bullet_sprites.add(bullet)
+
+            self.boomCounter = 0
+            
 
 
         if self.rect.right > display_width:
