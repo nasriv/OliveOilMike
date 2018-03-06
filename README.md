@@ -4,6 +4,7 @@
 ## Features
   - Character selection
   - Background Music
+  - Shoot oil drop bullets to destroy rocks
 
 ## How to Play/Controls
   - Download OO_MikeMain.py and images folder to python working directory
