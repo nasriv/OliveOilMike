@@ -1,6 +1,6 @@
 import pygame
 from pygame import *
-import random, os, time
+import random, os, time, math
 
 from types import *
 
@@ -76,6 +76,13 @@ PlayerSpriteRightChris = pygame.transform.scale(PlayerSpriteRightChris,(int(plW/
 PlayerSpriteLeftChris = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftChris.png"))
 PlayerSpriteLeftChris = pygame.transform.scale(PlayerSpriteLeftChris,(int(plW/scale),int(plH/scale)))
 
+# Player Jonny Sprite
+PlayerSpriteRightJonny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightJonny.png"))
+PlayerSpriteRightJonny = pygame.transform.scale(PlayerSpriteRightJonny,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftJonny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftJonny.png"))
+PlayerSpriteLeftJonny = pygame.transform.scale(PlayerSpriteLeftJonny,(int(plW/scale),int(plH/scale)))
+
+
 PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRightMike)
 PLayerL_mask = pygame.mask.from_surface(PlayerSpriteLeftMike)
 
@@ -90,6 +97,11 @@ RockW = 640
 RockH = 480
 rockImg = pygame.image.load(os.path.join(imagedir,"Rock.png"))
 rockImg = pygame.transform.scale(rockImg,(150,150))
+
+bulletW=100
+bulletH=150
+bulletImg = pygame.image.load(os.path.join(imagedir,"bullet.png"))
+bulletImg = pygame.transform.scale(bulletImg,(150,150))
 
 
 # DEFINE CLASSES
@@ -116,12 +128,33 @@ class item(pygame.sprite.Sprite):
 
         self.mask = pygame.mask.from_surface(self.image)
 
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, xDir = 0):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("images/bullet.png")
+        self.image = pygame.transform.scale(self.image,(30,30))
+        self.xDir = xDir
+
+        self.rect = self.image.get_rect()
+    def update(self):
+        yVal = math.sqrt(20*20 - 2.5*2.5*self.xDir*self.xDir)
+        self.rect.y -= yVal
+        if self.xDir < 0 :
+            self.rect.x -= math.sqrt(20*20 - yVal*yVal)
+        else:
+            self.rect.x += math.sqrt(20*20 - yVal*yVal)
+
+        global gameDisplay
+        if not gameDisplay.get_rect().contains(self.rect):
+            self.kill()
+
 
 class player(pygame.sprite.Sprite):
     # sprite for the player
 
     PlayerSpriteLeft = PlayerSpriteLeftMike
     PlayerSpriteRight = PlayerSpriteRightMike    
+    playerName="Mike"
 
     def __init__(self, velocity):
         pygame.sprite.Sprite.__init__(self)
@@ -130,6 +163,11 @@ class player(pygame.sprite.Sprite):
         self.velocity = velocity
         self.rect.centerx = HW
         self.rect.centery = display_height - self.rect.height/2
+        self.counter = 0
+        self.boomCounter = 0
+        self.interval = 20
+        self.boomInterval = -1
+        self.doubleBullet = False
 
     def update(self):
         k = pygame.key.get_pressed()
@@ -146,6 +184,73 @@ class player(pygame.sprite.Sprite):
         elif k[K_DOWN]:
             self.rect.y += self.velocity
 
+
+        self.counter += 1
+        
+        if self.boomInterval > 0:
+            self.boomCounter += 1
+
+        if self.counter == self.interval:
+            global persistentCount        
+
+            if persistentCount >= 60:
+                self.boomInterval = 100
+            elif persistentCount >= 40:
+                self.interval = 10
+            elif persistentCount >= 38:
+                self.interval = 11
+            elif persistentCount >= 36:
+                self.interval = 12
+            elif persistentCount >= 34:
+                self.interval = 13
+            elif persistentCount >= 32:
+                self.interval = 14
+            elif persistentCount >= 30:
+                self.doubleBullet = True
+            elif persistentCount >= 20:
+                self.interval = 15
+            elif persistentCount >= 18:
+                self.interval = 16
+            elif persistentCount >= 16:
+                self.interval = 17
+            elif persistentCount >= 14:
+                self.interval = 18
+            elif persistentCount >= 12:
+                self.interval = 19
+            self.counter = 0
+
+            if persistentCount >= 10:
+                if self.doubleBullet:
+                    bullet1 = Bullet()
+                    bullet2 = Bullet()
+                    bullet1.rect.x = self.rect.x - 10
+                    bullet1.rect.y = self.rect.y
+                    bullet2.rect.x = self.rect.x + 10
+                    bullet2.rect.y = self.rect.y
+                    all_sprites.add(bullet1)
+                    bullet_sprites.add(bullet1)
+                    all_sprites.add(bullet2)
+                    bullet_sprites.add(bullet2)
+                else:
+                    bullet = Bullet()
+                    bullet.rect.x = self.rect.x
+                    bullet.rect.y = self.rect.y
+                    all_sprites.add(bullet)
+                    bullet_sprites.add(bullet)
+                    
+        if self.boomCounter == self.boomInterval:
+
+            for i in range(0,11):
+                bullet = Bullet(-5 + i)
+                bullet.rect.x = self.rect.x
+                bullet.rect.y = self.rect.y
+                all_sprites.add(bullet)
+                bullet_sprites.add(bullet)
+
+            self.boomCounter = 0
+            
+
+
         if self.rect.right > display_width:
             self.rect.right = display_width
         if self.rect.left < 0:
@@ -159,21 +264,34 @@ class player(pygame.sprite.Sprite):
         self.PlayerSpriteLeft = PlayerSpriteLeftMike
         self.PlayerSpriteRight = PlayerSpriteRightMike
         self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Mike"
 
     def setGrant(self):
         self.PlayerSpriteLeft = PlayerSpriteLeftGrant
         self.PlayerSpriteRight = PlayerSpriteRightGrant
         self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Grant"
 
     def setVinny(self):
         self.PlayerSpriteLeft = PlayerSpriteLeftVinny
         self.PlayerSpriteRight = PlayerSpriteRightVinny
         self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Vinny"
+
+    def setJonny(self):
+        self.PlayerSpriteLeft = PlayerSpriteLeftJonny
+        self.PlayerSpriteRight = PlayerSpriteRightJonny
+        self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Jonny"
 
     def setChris(self):
         self.PlayerSpriteLeft = PlayerSpriteLeftChris
         self.PlayerSpriteRight = PlayerSpriteRightChris
         self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = "Chris"
+
+    def getPlayerName(self):
+        return self.playerName
 
        # self.mask = pygame.mask.from_surface(self.image)
 
@@ -289,8 +407,24 @@ def gameLoop():
 
         # check collision
         hits = pygame.sprite.spritecollide(player, rock_sprites, False, pygame.sprite.collide_mask)
-        if hits:
+        if hits and (player.getPlayerName() != "Jonny" or musicList[muPos].find("Steamshovel") == -1):
             crash(persistentCount, count)
+
+        for rock in rock_sprites:
+            for bullet in bullet_sprites:
+                tempBulletSprites = pygame.sprite.Group()
+                tempBulletSprites.add(bullet)
+                rock_hits = pygame.sprite.spritecollide(rock, tempBulletSprites, False, pygame.sprite.collide_mask)
+                if rock_hits:
+                    rock.kill()
+                    bullet.kill()
+                    break
+
+        if len(rock_sprites) < 6:
+            r = item(rockImg)
+            rock_sprites.add(r)
+            all_sprites.add(r)
+
 
         # check player collected oil
         collect = pygame.sprite.spritecollide(player, oil_sprites, True, pygame.sprite.collide_mask)
@@ -322,10 +456,11 @@ def gameChar():
         gameDisplay.blit(bkIMG, (0, 0))
         gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
 
-        button("MIKE (THE GOOD BOY)", HW-200, HH+20, 400, 50, white, ltGreen, setMike)
-        button("VINNY (EYY, BROOKLYN)", HW-200, HH+90, 400, 50, white, ltRed , setVinny)
-        button("GRANT (NOT THIS ONE)", HW-200, HH+160, 400, 50, white, ltRed , setGrant)
-        button("MCGINN (THE ONE WHO BEANS)", HW-200, HH+230, 400, 50, white, ltRed, setChris)
+        button("MIKE (THE GOOD BOY)", HW-200, HH+0, 400, 50, white, ltGreen, setMike)
+        button("VINNY (EYY, BROOKLYN)", HW-200, HH+60, 400, 50, white, ltRed , setVinny)
+        button("GRANT (NOT THIS ONE)", HW-200, HH+120, 400, 50, white, ltRed , setGrant)
+        button("MCGINN (THE ONE WHO BEANS)", HW-200, HH+180, 400, 50, white, ltRed, setChris)
+        button("STEAMSHOVEL JONNY", HW-200, HH+240, 400, 50, white, ltGreen, setJonny)
 
         pygame.display.update()
 
@@ -358,6 +493,11 @@ def setVinny():
     time.sleep(.5)
     game_intro()
 
+def setJonny():
+    player.setJonny()
+    time.sleep(.5)
+    game_intro()
+
 def setMike():
     player.setMike()
     time.sleep(.5)
@@ -381,6 +521,7 @@ def backToIntro():
 all_sprites = pygame.sprite.Group()
 oil_sprites = pygame.sprite.Group()
 rock_sprites = pygame.sprite.Group()
+bullet_sprites = pygame.sprite.Group()
 
 player = player(10)
 all_sprites.add(player)
