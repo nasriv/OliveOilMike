@@ -1,5 +1,6 @@
 # Olive Oil Mike
-2D Python game developed using PyGame package and Python 3.6. All images and background design were created using Gimp 2.8
+2D Python game developed using PyGame package and Python 3.6
+All images and background design were custom made and created using Gimp 2.8
 
 ## Features
   - Character selection
