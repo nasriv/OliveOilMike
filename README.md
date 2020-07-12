@@ -9,7 +9,7 @@ All images and background design were custom made using Gimp 2.8
   - Shoot oil drop bullets to destroy rocks
 
 ## How to Play/Controls
-  - Download OO_MikeMain.py and images folder to python working directory
+  - Clone repo to local machine
   - Run OO_MikeMain.py
   - Arrow Keys to control the player [up/down/left/right]
   - Intro Screen mouse click to either play or quit the game
