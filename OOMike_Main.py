@@ -1,5 +1,7 @@
+#!/usr/bin/env python
 import pygame
 from pygame import *
+import sys
 import random, os, time, math
 
 from types import *
@@ -49,38 +51,72 @@ hw_logo = int(Logorect.width/2)
 # Import Player icon
 plW = 390
 plH = 490
-scale = 7
+SCALE = 7
+
+
+class PlayerSprite:
+
+    def __init__(self, name: str, scale: float = SCALE):
+        self.name = name
+        for side in 'left', 'right':
+            setattr(
+                self,
+                side,
+                pygame.transform.scale(
+                    pygame.image.load(
+                        os.path.join(
+                            imagedir,
+                            os.path.join(
+                                imagedir,
+                                "PlayerSprite{}{}.png".format(
+                                    side.capitalize(),
+                                    name
+                                ),
+                            ),
+                        )
+                    ),
+                    (int(plW / SCALE), int(plH / SCALE)),
+                ),
+            )
+
+
+PLAYER_SPRITE_MIKE = PlayerSprite("")
+PLAYER_SPRITE_GRANT = PlayerSprite("Grant")
+PLAYER_SPRITE_VINNY = PlayerSprite("Vinny")
+PLAYER_SPRITE_CHRIS = PlayerSprite("Chris")
+PLAYER_SPRITE_JONNY = PlayerSprite("Jonny")
+PLAYER_SPRITE_STEF = PlayerSprite("Stef")
 
 # Player Mike Sprite
 PlayerSpriteRightMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRight.png"))
-PlayerSpriteRightMike = pygame.transform.scale(PlayerSpriteRightMike,(int(plW/scale),int(plH/scale)))
+PlayerSpriteRightMike = pygame.transform.scale(PlayerSpriteRightMike, (int(plW / SCALE), int(plH / SCALE)))
 PlayerSpriteLeftMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeft.png"))
-PlayerSpriteLeftMike = pygame.transform.scale(PlayerSpriteLeftMike,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftMike = pygame.transform.scale(PlayerSpriteLeftMike, (int(plW / SCALE), int(plH / SCALE)))
 
 # Player Grant Sprite
 PlayerSpriteRightGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightGrant.png"))
-PlayerSpriteRightGrant = pygame.transform.scale(PlayerSpriteRightGrant,(int(plW/scale),int(plH/scale)))
+PlayerSpriteRightGrant = pygame.transform.scale(PlayerSpriteRightGrant, (int(plW / SCALE), int(plH / SCALE)))
 PlayerSpriteLeftGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftGrant.png"))
-PlayerSpriteLeftGrant = pygame.transform.scale(PlayerSpriteLeftGrant,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftGrant = pygame.transform.scale(PlayerSpriteLeftGrant, (int(plW / SCALE), int(plH / SCALE)))
 
 # Player Vinny Sprite
 PlayerSpriteRightVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightVinny.png"))
-PlayerSpriteRightVinny = pygame.transform.scale(PlayerSpriteRightVinny,(int(plW/scale),int(plH/scale)))
+PlayerSpriteRightVinny = pygame.transform.scale(PlayerSpriteRightVinny, (int(plW / SCALE), int(plH / SCALE)))
 PlayerSpriteLeftVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftVinny.png"))
-PlayerSpriteLeftVinny = pygame.transform.scale(PlayerSpriteLeftVinny,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftVinny = pygame.transform.scale(PlayerSpriteLeftVinny, (int(plW / SCALE), int(plH / SCALE)))
 
 # Player Chris Sprite
-scale = 4
+SCALE = 4
 PlayerSpriteRightChris = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightChris.png"))
-PlayerSpriteRightChris = pygame.transform.scale(PlayerSpriteRightChris,(int(plW/scale),int(plH/scale)))
+PlayerSpriteRightChris = pygame.transform.scale(PlayerSpriteRightChris, (int(plW / SCALE), int(plH / SCALE)))
 PlayerSpriteLeftChris = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftChris.png"))
-PlayerSpriteLeftChris = pygame.transform.scale(PlayerSpriteLeftChris,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftChris = pygame.transform.scale(PlayerSpriteLeftChris, (int(plW / SCALE), int(plH / SCALE)))
 
 # Player Jonny Sprite
 PlayerSpriteRightJonny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightJonny.png"))
-PlayerSpriteRightJonny = pygame.transform.scale(PlayerSpriteRightJonny,(int(plW/scale),int(plH/scale)))
+PlayerSpriteRightJonny = pygame.transform.scale(PlayerSpriteRightJonny, (int(plW / SCALE), int(plH / SCALE)))
 PlayerSpriteLeftJonny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftJonny.png"))
-PlayerSpriteLeftJonny = pygame.transform.scale(PlayerSpriteLeftJonny,(int(plW/scale),int(plH/scale)))
+PlayerSpriteLeftJonny = pygame.transform.scale(PlayerSpriteLeftJonny, (int(plW / SCALE), int(plH / SCALE)))
 
 
 PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRightMike)
@@ -149,11 +185,11 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
 
-class player(pygame.sprite.Sprite):
+class Player(pygame.sprite.Sprite):
     # sprite for the player
 
     PlayerSpriteLeft = PlayerSpriteLeftMike
-    PlayerSpriteRight = PlayerSpriteRightMike    
+    PlayerSpriteRight = PlayerSpriteRightMike
     playerName="Mike"
 
     def __init__(self, velocity):
@@ -172,7 +208,9 @@ class player(pygame.sprite.Sprite):
     def update(self):
         k = pygame.key.get_pressed()
 
-        if k[K_LEFT]:
+        if k[K_ESCAPE]:
+            game_intro()
+        elif k[K_LEFT]:
             self.rect.x -= self.velocity
             self.image = self.PlayerSpriteLeft.convert_alpha()
         elif k[K_RIGHT]:
@@ -186,12 +224,12 @@ class player(pygame.sprite.Sprite):
 
 
         self.counter += 1
-        
+
         if self.boomInterval > 0:
             self.boomCounter += 1
 
         if self.counter == self.interval:
-            global persistentCount        
+            global persistentCount
 
             if persistentCount >= 60:
                 self.boomInterval = 100
@@ -237,7 +275,7 @@ class player(pygame.sprite.Sprite):
                     bullet.rect.y = self.rect.y
                     all_sprites.add(bullet)
                     bullet_sprites.add(bullet)
-                    
+
         if self.boomCounter == self.boomInterval:
 
             for i in range(0,11):
@@ -248,7 +286,7 @@ class player(pygame.sprite.Sprite):
                 bullet_sprites.add(bullet)
 
             self.boomCounter = 0
-            
+
 
 
         if self.rect.right > display_width:
@@ -259,6 +297,18 @@ class player(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom >= display_height:
             self.rect.bottom = display_height
+
+    def set_callback(self, sprite: PlayerSprite):
+        def callback():
+            self.set_player(sprite)
+            game_intro()
+        return callback
+
+    def set_player(self, sprite: PlayerSprite):
+        self.PlayerSpriteRight = sprite.right
+        self.PlayerSpriteLeft = sprite.left
+        self.image = self.PlayerSpriteLeft.convert_alpha()
+        self.playerName = sprite.name
 
     def setMike(self):
         self.PlayerSpriteLeft = PlayerSpriteLeftMike
@@ -337,15 +387,11 @@ def message_display(text, pos):
     pygame.display.update()
 
 
-def crash(count, count2):
+def crash(count):
     message_display("You were hit by that kid throwing rocks...", 0)
     message_display("You collected " + str(count) + " bottles...", 1)
-    clock.tick(10)
-
-    if count == count2 and count != 0:
-        time.sleep(1)
-
-    gameLoop()
+    time.sleep(1)
+    return
 
 
 def game_intro():
@@ -375,73 +421,79 @@ def gameLoop():
     count = 0
     gameExit = False
 
+    try:
+        while not gameExit:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    gameQuit()
 
-    while not gameExit:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                gameQuit()
+    #MUSIC HANDLING
+            global muPos
+            global muPosPrev
 
-#MUSIC HANDLING
-        global muPos
-        global muPosPrev
+            if len(musicList) > 0:
+                if not pygame.mixer.music.get_busy():
+                    if muPos != muPosPrev:
+                        pygame.mixer.music.play(1)
+                    elif muPos == muPosPrev:
+                        pygame.mixer.music.load("music/" + musicList[muPos])
+                        pygame.mixer.music.play(1)
+                        if muPos < len(musicList) - 1:
+                            muPos += 1
+                        else:
+                            muPos = 0
+                elif muPos != muPosPrev:
+                    muPosPrev = muPos
 
-        if len(musicList) > 0:
-            if not pygame.mixer.music.get_busy():
-                if muPos != muPosPrev:
-                    pygame.mixer.music.play(1)
-                elif muPos == muPosPrev:
-                    pygame.mixer.music.load("music/" + musicList[muPos])
-                    pygame.mixer.music.play(1)
-                    if muPos < len(musicList) - 1:
-                        muPos += 1
-                    else:
-                        muPos = 0
-            elif muPos != muPosPrev:
-                muPosPrev = muPos
+            # Backgound blit
+            gameDisplay.blit(bkIMG,(0,0))
 
-        # Backgound blit
-        gameDisplay.blit(bkIMG,(0,0))
+            # Update
+            all_sprites.update()
 
-        # Update
-        all_sprites.update()
+            # check collision
+            hits = pygame.sprite.spritecollide(player, rock_sprites, False, pygame.sprite.collide_mask)
+            if hits and (player.getPlayerName() != "Jonny" or musicList[muPos].find("Steamshovel") == -1):
+                for c in (rock_sprites, bullet_sprites):
+                    for i in c:
+                        i.kill()
+                crash(persistentCount)
+                count = 0
 
-        # check collision
-        hits = pygame.sprite.spritecollide(player, rock_sprites, False, pygame.sprite.collide_mask)
-        if hits and (player.getPlayerName() != "Jonny" or musicList[muPos].find("Steamshovel") == -1):
-            crash(persistentCount, count)
+            for rock in rock_sprites:
+                for bullet in bullet_sprites:
+                    tempBulletSprites = pygame.sprite.Group()
+                    tempBulletSprites.add(bullet)
+                    rock_hits = pygame.sprite.spritecollide(rock, tempBulletSprites, False, pygame.sprite.collide_mask)
+                    if rock_hits:
+                        rock.kill()
+                        bullet.kill()
+                        break
 
-        for rock in rock_sprites:
-            for bullet in bullet_sprites:
-                tempBulletSprites = pygame.sprite.Group()
-                tempBulletSprites.add(bullet)
-                rock_hits = pygame.sprite.spritecollide(rock, tempBulletSprites, False, pygame.sprite.collide_mask)
-                if rock_hits:
-                    rock.kill()
-                    bullet.kill()
-                    break
-
-        if len(rock_sprites) < 6:
-            r = item(rockImg)
-            rock_sprites.add(r)
-            all_sprites.add(r)
+            if len(rock_sprites) < 6:
+                r = item(rockImg)
+                rock_sprites.add(r)
+                all_sprites.add(r)
 
 
-        # check player collected oil
-        collect = pygame.sprite.spritecollide(player, oil_sprites, True, pygame.sprite.collide_mask)
-        for i in collect:
-            o = item(oilImg)
-            all_sprites.add(o)
-            oil_sprites.add(o)
-            count += 1
+            # check player collected oil
+            collect = pygame.sprite.spritecollide(player, oil_sprites, True, pygame.sprite.collide_mask)
+            for _ in collect:
+                new_oil = item(oilImg)
+                all_sprites.add(new_oil)
+                oil_sprites.add(new_oil)
+                count += 1
 
-        persistentCount = count
-        # Draw / Render
-        all_sprites.draw(gameDisplay)
-        oil_count(count)
+            persistentCount = count
+            # Draw / Render
+            all_sprites.draw(gameDisplay)
+            oil_count(count)
 
-        pygame.display.update()
+            pygame.display.update()
 
-        clock.tick(FPS)
+            clock.tick(FPS)
+    except pygame.error:
+        sys.exit()
 
 
 def gameChar():
@@ -454,13 +506,14 @@ def gameChar():
                 gameQuit()
 
         gameDisplay.blit(bkIMG, (0, 0))
-        gameDisplay.blit(IntroLogo,(HW-hw_logo,100))
+        gameDisplay.blit(IntroLogo,(HW-hw_logo,40))
 
-        button("MIKE (THE GOOD BOY)", HW-200, HH+0, 400, 50, white, ltGreen, setMike)
-        button("VINNY (EYY, BROOKLYN)", HW-200, HH+60, 400, 50, white, ltRed , setVinny)
-        button("GRANT (NOT THIS ONE)", HW-200, HH+120, 400, 50, white, ltRed , setGrant)
-        button("MCGINN (THE ONE WHO BEANS)", HW-200, HH+180, 400, 50, white, ltRed, setChris)
-        button("STEAMSHOVEL JONNY", HW-200, HH+240, 400, 50, white, ltGreen, setJonny)
+        button("MIKE (THE GOOD BOY)", HW-200, HH-60, 400, 50, white, ltGreen, player.set_callback(PLAYER_SPRITE_MIKE))
+        button("VINNY (EYY, BROOKLYN)", HW-200, HH+0, 400, 50, white, ltRed , player.set_callback(PLAYER_SPRITE_VINNY))
+        button("GRANT (NOT THIS ONE)", HW-200, HH+60, 400, 50, white, ltRed , player.set_callback(PLAYER_SPRITE_GRANT))
+        button("MCGINN (THE ONE WHO BEANS)", HW-200, HH+120, 400, 50, white, ltRed, player.set_callback(PLAYER_SPRITE_CHRIS))
+        button("STEF (SICKO MODE ACTIVATE)", HW-200, HH+180, 400, 50, white, ltRed, player.set_callback(PLAYER_SPRITE_STEF))
+        button("STEAMSHOVEL JONNY", HW-200, HH+240, 400, 50, white, ltGreen, player.set_callback(PLAYER_SPRITE_JONNY))
 
         pygame.display.update()
 
@@ -514,7 +567,6 @@ def backToIntro():
 
 
 
-''' EXECUTE CODE'''
 
 # ---- Initialize player and items ---- #
 
@@ -523,7 +575,7 @@ oil_sprites = pygame.sprite.Group()
 rock_sprites = pygame.sprite.Group()
 bullet_sprites = pygame.sprite.Group()
 
-player = player(10)
+player = Player(10)
 all_sprites.add(player)
 
 for i in range(1):
@@ -536,4 +588,5 @@ for j in range(6):
     all_sprites.add(r)
     rock_sprites.add(r)
 
-game_intro()
+if __name__ == '__main__':
+    game_intro()
