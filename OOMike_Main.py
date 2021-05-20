@@ -75,7 +75,7 @@ class PlayerSprite:
                             ),
                         )
                     ),
-                    (int(plW / SCALE), int(plH / SCALE)),
+                    (int(plW / scale), int(plH / scale)),
                 ),
             )
 
@@ -83,44 +83,12 @@ class PlayerSprite:
 PLAYER_SPRITE_MIKE = PlayerSprite("")
 PLAYER_SPRITE_GRANT = PlayerSprite("Grant")
 PLAYER_SPRITE_VINNY = PlayerSprite("Vinny")
-PLAYER_SPRITE_CHRIS = PlayerSprite("Chris")
-PLAYER_SPRITE_JONNY = PlayerSprite("Jonny")
+PLAYER_SPRITE_CHRIS = PlayerSprite("Chris", scale=4)
 PLAYER_SPRITE_STEF = PlayerSprite("Stef")
+PLAYER_SPRITE_JONNY = PlayerSprite("Jonny", scale=4)
 
-# Player Mike Sprite
-PlayerSpriteRightMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRight.png"))
-PlayerSpriteRightMike = pygame.transform.scale(PlayerSpriteRightMike, (int(plW / SCALE), int(plH / SCALE)))
-PlayerSpriteLeftMike = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeft.png"))
-PlayerSpriteLeftMike = pygame.transform.scale(PlayerSpriteLeftMike, (int(plW / SCALE), int(plH / SCALE)))
-
-# Player Grant Sprite
-PlayerSpriteRightGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightGrant.png"))
-PlayerSpriteRightGrant = pygame.transform.scale(PlayerSpriteRightGrant, (int(plW / SCALE), int(plH / SCALE)))
-PlayerSpriteLeftGrant = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftGrant.png"))
-PlayerSpriteLeftGrant = pygame.transform.scale(PlayerSpriteLeftGrant, (int(plW / SCALE), int(plH / SCALE)))
-
-# Player Vinny Sprite
-PlayerSpriteRightVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightVinny.png"))
-PlayerSpriteRightVinny = pygame.transform.scale(PlayerSpriteRightVinny, (int(plW / SCALE), int(plH / SCALE)))
-PlayerSpriteLeftVinny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftVinny.png"))
-PlayerSpriteLeftVinny = pygame.transform.scale(PlayerSpriteLeftVinny, (int(plW / SCALE), int(plH / SCALE)))
-
-# Player Chris Sprite
-SCALE = 4
-PlayerSpriteRightChris = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightChris.png"))
-PlayerSpriteRightChris = pygame.transform.scale(PlayerSpriteRightChris, (int(plW / SCALE), int(plH / SCALE)))
-PlayerSpriteLeftChris = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftChris.png"))
-PlayerSpriteLeftChris = pygame.transform.scale(PlayerSpriteLeftChris, (int(plW / SCALE), int(plH / SCALE)))
-
-# Player Jonny Sprite
-PlayerSpriteRightJonny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteRightJonny.png"))
-PlayerSpriteRightJonny = pygame.transform.scale(PlayerSpriteRightJonny, (int(plW / SCALE), int(plH / SCALE)))
-PlayerSpriteLeftJonny = pygame.image.load(os.path.join(imagedir,"PlayerSpriteLeftJonny.png"))
-PlayerSpriteLeftJonny = pygame.transform.scale(PlayerSpriteLeftJonny, (int(plW / SCALE), int(plH / SCALE)))
-
-
-PlayerR_mask = pygame.mask.from_surface(PlayerSpriteRightMike)
-PLayerL_mask = pygame.mask.from_surface(PlayerSpriteLeftMike)
+PlayerR_mask = pygame.mask.from_surface(PLAYER_SPRITE_MIKE.right)
+PLayerL_mask = pygame.mask.from_surface(PLAYER_SPRITE_MIKE.left)
 
 # import olive oil collectible
 OilW = 548
@@ -188,8 +156,8 @@ class Bullet(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     # sprite for the player
 
-    PlayerSpriteLeft = PlayerSpriteLeftMike
-    PlayerSpriteRight = PlayerSpriteRightMike
+    PlayerSpriteLeft = PLAYER_SPRITE_MIKE.left
+    PlayerSpriteRight = PLAYER_SPRITE_MIKE.right
     playerName="Mike"
 
     def __init__(self, velocity):
@@ -309,36 +277,6 @@ class Player(pygame.sprite.Sprite):
         self.PlayerSpriteLeft = sprite.left
         self.image = self.PlayerSpriteLeft.convert_alpha()
         self.playerName = sprite.name
-
-    def setMike(self):
-        self.PlayerSpriteLeft = PlayerSpriteLeftMike
-        self.PlayerSpriteRight = PlayerSpriteRightMike
-        self.image = self.PlayerSpriteLeft.convert_alpha()
-        self.playerName = "Mike"
-
-    def setGrant(self):
-        self.PlayerSpriteLeft = PlayerSpriteLeftGrant
-        self.PlayerSpriteRight = PlayerSpriteRightGrant
-        self.image = self.PlayerSpriteLeft.convert_alpha()
-        self.playerName = "Grant"
-
-    def setVinny(self):
-        self.PlayerSpriteLeft = PlayerSpriteLeftVinny
-        self.PlayerSpriteRight = PlayerSpriteRightVinny
-        self.image = self.PlayerSpriteLeft.convert_alpha()
-        self.playerName = "Vinny"
-
-    def setJonny(self):
-        self.PlayerSpriteLeft = PlayerSpriteLeftJonny
-        self.PlayerSpriteRight = PlayerSpriteRightJonny
-        self.image = self.PlayerSpriteLeft.convert_alpha()
-        self.playerName = "Jonny"
-
-    def setChris(self):
-        self.PlayerSpriteLeft = PlayerSpriteLeftChris
-        self.PlayerSpriteRight = PlayerSpriteRightChris
-        self.image = self.PlayerSpriteLeft.convert_alpha()
-        self.playerName = "Chris"
 
     def getPlayerName(self):
         return self.playerName
@@ -535,31 +473,6 @@ def gameCredits():
 
         pygame.display.update()
 
-
-def setGrant():
-    player.setGrant()
-    time.sleep(.5)
-    game_intro()
-
-def setVinny():
-    player.setVinny()
-    time.sleep(.5)
-    game_intro()
-
-def setJonny():
-    player.setJonny()
-    time.sleep(.5)
-    game_intro()
-
-def setMike():
-    player.setMike()
-    time.sleep(.5)
-    game_intro()
-
-def setChris():
-    player.setChris()
-    time.sleep(.5)
-    game_intro()
 
 def backToIntro():
     time.sleep(.5)
