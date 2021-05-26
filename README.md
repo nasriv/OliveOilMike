@@ -32,4 +32,21 @@ All images and background design were custom made using Gimp 2.8
 ## Link to PyGame Site
 https://www.pygame.org/wiki/GettingStarted
 
+## Developing
 
+Start by creating a virtualenv so that you can develop without worrying about
+conflicting system packages:
+
+```bash
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
+You can now run the game with:
+
+```bash
+python OOMike_Main.py
+```
+
+Run `deactivate` to exit the virtualenv.
